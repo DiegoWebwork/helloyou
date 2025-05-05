@@ -89,7 +89,7 @@ export default function CoursesPage() {
         actions={
            <CourseDialog
               trigger={
-                 <Button size="sm">
+                 <Button size="sm" onClick={handleAddNew}> {/* Use onClick to trigger add new flow */}
                      <PlusCircle className="mr-2 h-4 w-4" />
                      Add New Course
                  </Button>
@@ -124,7 +124,7 @@ export default function CoursesPage() {
              </p>
               <CourseDialog
                 trigger={
-                    <Button size="sm" className="mt-4">
+                    <Button size="sm" className="mt-4" onClick={handleAddNew}> {/* Use onClick to trigger add new flow */}
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Add New Course
                     </Button>
@@ -135,13 +135,14 @@ export default function CoursesPage() {
          )}
        </main>
 
-       {/* Separate Dialog instance controlled by state */}
+       {/* Separate Dialog instance controlled by state for editing or adding */}
        <CourseDialog
             open={isDialogOpen}
             onOpenChange={setIsDialogOpen}
             course={editingCourse}
             onSuccess={handleDialogSuccess}
-            // Removed trigger={<></>} as it's controlled by open/onOpenChange
+            // The trigger is removed here as it's controlled by open/onOpenChange state
+            // Triggering happens via `handleEdit` or `handleAddNew` setting `isDialogOpen` to true
         />
 
     </div>
