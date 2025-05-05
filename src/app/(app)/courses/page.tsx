@@ -141,7 +141,7 @@ export default function CoursesPage() {
             onOpenChange={setIsDialogOpen}
             course={editingCourse}
             onSuccess={handleDialogSuccess}
-            trigger={<></>} // Empty trigger, managed by state
+            // Removed trigger={<></>} as it's controlled by open/onOpenChange
         />
 
     </div>

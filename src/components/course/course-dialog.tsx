@@ -13,17 +13,24 @@ import { CourseForm } from "./course-form";
 import { useState } from 'react';
 
 interface CourseDialogProps {
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode; // Make trigger optional
   course?: Course | null; // Course data for editing, null/undefined for creating
   onSuccess?: () => void; // Optional callback after successful save
+  // Allow passing Radix Dialog props like open and onOpenChange
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function CourseDialog({ trigger, course, onSuccess }: CourseDialogProps) {
-  const [open, setOpen] = useState(false);
+export function CourseDialog({ trigger, course, onSuccess, open: controlledOpen, onOpenChange: controlledOnOpenChange }: CourseDialogProps) {
+  // Use controlled state if provided, otherwise manage internal state
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const onOpenChange = controlledOnOpenChange ?? setInternalOpen;
+
   const isEditing = !!course;
 
    const handleSuccess = () => {
-     setOpen(false); // Close the dialog on success
+     onOpenChange(false); // Close the dialog on success using the appropriate handler
      if (onSuccess) {
        onSuccess(); // Call the parent's success handler (e.g., to refresh data)
      }
@@ -31,8 +38,9 @@ export function CourseDialog({ trigger, course, onSuccess }: CourseDialogProps) 
 
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* Only render DialogTrigger if trigger prop is provided */}
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Edit Course' : 'Create New Course'}</DialogTitle>
