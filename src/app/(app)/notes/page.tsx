@@ -97,7 +97,7 @@ export default function AllNotesPage() {
         actions={
             <NoteDialog
                 trigger={
-                <Button size="sm" disabled={courses.length === 0}>
+                <Button size="sm" disabled={courses.length === 0} onClick={handleAddNew}>
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add New Note
                 </Button>
@@ -135,7 +135,7 @@ export default function AllNotesPage() {
               {courses.length > 0 && (
                 <NoteDialog
                     trigger={
-                        <Button size="sm">
+                        <Button size="sm" onClick={handleAddNew}>
                             <PlusCircle className="mr-2 h-4 w-4" />
                              Add New Note
                         </Button>
@@ -155,7 +155,7 @@ export default function AllNotesPage() {
          note={editingNote}
          courses={courses}
          onSuccess={handleDialogSuccess}
-         trigger={<></>} // Empty trigger, managed by state
+         // Trigger is removed here as it's controlled by open/onOpenChange state
        />
     </div>
   );

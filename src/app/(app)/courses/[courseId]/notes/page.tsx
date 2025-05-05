@@ -113,7 +113,7 @@ export default function CourseNotesPage() {
             </Link>
             <NoteDialog
                 trigger={
-                    <Button size="sm" disabled={!course}>
+                    <Button size="sm" disabled={!course} onClick={handleAddNew}>
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Add Note to this Course
                     </Button>
@@ -150,7 +150,7 @@ export default function CourseNotesPage() {
             </p>
              <NoteDialog
                 trigger={
-                    <Button size="sm" disabled={!course}>
+                    <Button size="sm" disabled={!course} onClick={handleAddNew}>
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Add Note to this Course
                     </Button>
@@ -171,7 +171,7 @@ export default function CourseNotesPage() {
          courses={allCourses} // Pass all courses here too
          defaultCourseId={courseId} // Ensure default is set
          onSuccess={handleDialogSuccess}
-         trigger={<></>} // Empty trigger, managed by state
+         // Trigger is removed here as it's controlled by open/onOpenChange state
        />
     </div>
   );

@@ -13,27 +13,43 @@ import { NoteForm } from "./note-form";
 import { useState } from 'react';
 
 interface NoteDialogProps {
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode; // Make trigger optional
   note?: Note | null; // Note data for editing, null/undefined for creating
   courses: Course[]; // List of available courses
   defaultCourseId?: string; // Optional default course selection
   onSuccess?: () => void; // Optional callback after successful save
+  // Allow passing Radix Dialog props like open and onOpenChange
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function NoteDialog({ trigger, note, courses, defaultCourseId, onSuccess }: NoteDialogProps) {
-  const [open, setOpen] = useState(false);
+export function NoteDialog({
+    trigger,
+    note,
+    courses,
+    defaultCourseId,
+    onSuccess,
+    open: controlledOpen,
+    onOpenChange: controlledOnOpenChange
+}: NoteDialogProps) {
+  // Use controlled state if provided, otherwise manage internal state
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const onOpenChange = controlledOnOpenChange ?? setInternalOpen;
+
   const isEditing = !!note;
 
    const handleSuccess = () => {
-     setOpen(false); // Close the dialog on success
+     onOpenChange(false); // Close the dialog on success using the appropriate handler
      if (onSuccess) {
        onSuccess(); // Call the parent's success handler (e.g., to refresh data)
      }
    };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* Only render DialogTrigger if trigger prop is provided */}
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Edit Note' : 'Create New Note'}</DialogTitle>
