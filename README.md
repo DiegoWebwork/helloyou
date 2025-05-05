@@ -1,3 +1,5 @@
+![alt text](https://github.com/DiegoWebwork/estrutura-de-dados/blob/main/universidade%20de%20vassouras%20Vertical.png)
+
 # Curso: Engenharia de Software
 # Aluno: Diego Rios dos Santos (202010774)
 # Disciplina: ENGENHARIA DE SOFTWARE CONTINUA 8º Periodo
@@ -172,4 +174,4 @@ classDiagram
 }
 ```
 
-*Nota: A implementação atual usa um modelo simples em memória com arrays e objetos JavaScript, conforme definido em `src/types/index.ts` e simulado em `src/data/`.*
+
