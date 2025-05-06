@@ -1,3 +1,5 @@
+'use server';
+
 import type { Note } from '@/types';
 import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';

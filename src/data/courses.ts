@@ -1,3 +1,5 @@
+'use server';
+
 import type { Course } from '@/types';
 import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
@@ -42,8 +44,8 @@ export const addCourse = async (courseData: Omit<Course, 'id'>): Promise<Course>
     const { db } = await connectToDatabase();
     const courseToInsert = {
       ...courseData,
-      startDate: courseData.startDate ? new Date(courseData.startDate) : undefined,
-      endDate: courseData.endDate ? new Date(courseData.endDate) : undefined,
+      startDate: courseData.startDate ? new Date(courseData.startDate as string) : undefined,
+      endDate: courseData.endDate ? new Date(courseData.endDate as string) : undefined,
     };
     const result = await db.collection(COURSES_COLLECTION).insertOne(courseToInsert);
     
