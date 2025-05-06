@@ -13,6 +13,7 @@ Um aplicativo web para gerenciamento de cursos, matrículas e progresso dos alun
 
 - Node.js (v18 ou superior recomendado)
 - npm ou yarn
+- MongoDB (local instance or Atlas)
 
 ## Instalação
 
@@ -29,16 +30,26 @@ Um aplicativo web para gerenciamento de cursos, matrículas e progresso dos alun
    yarn install
    ```
 
+3. Configure as variáveis de ambiente:
+   - Crie um arquivo `.env` na raiz do projeto (ou `.env.local`).
+   - Adicione sua string de conexão do MongoDB:
+     ```
+     MONGODB_URI="your_mongodb_connection_string"
+     # Exemplo local: MONGODB_URI="mongodb://localhost:27017/coursenote_db"
+     ```
+   - Você pode usar o arquivo `.env.example` como template.
+
 ## Executando o Aplicativo
 
-1. Inicie o servidor de desenvolvimento:
+1. Certifique-se que sua instância MongoDB está rodando e acessível.
+2. Inicie o servidor de desenvolvimento:
    ```bash
    npm run dev
    # ou
    yarn dev
    ```
 
-2. O aplicativo estará disponível na porta `http://localhost:9002`.
+3. O aplicativo estará disponível na porta `http://localhost:9002`.
 
 ## Funcionalidades
 
@@ -68,16 +79,18 @@ Um aplicativo web para gerenciamento de cursos, matrículas e progresso dos alun
 │   │   ├── ui/         # Componentes de UI (Shadcn/ui)
 │   │   ├── app-sidebar.tsx # Componente da barra lateral
 │   │   └── page-header.tsx # Componente do cabeçalho da página
-│   ├── data/           # Funções de acesso e manipulação de dados (simulação in-memory)
+│   ├── data/           # Funções de acesso e manipulação de dados (MongoDB)
 │   │   ├── courses.ts
 │   │   └── notes.ts
 │   ├── hooks/          # Hooks React customizados
 │   │   ├── use-mobile.tsx
 │   │   └── use-toast.ts
 │   ├── lib/            # Funções utilitárias
-│   │   └── utils.ts
+│   │   ├── utils.ts
+│   │   └── mongodb.ts  # Utilitário de conexão com MongoDB
 │   └── types/          # Definições de tipos TypeScript
 │       └── index.ts
+├── .env                # Variáveis de ambiente (MONGODB_URI) - NÃO FAÇA COMMIT COM SEGREDOS
 ├── .env.example        # Exemplo de variáveis de ambiente
 ├── .eslintrc.json      # Configuração do ESLint
 ├── .gitignore          # Arquivos ignorados pelo Git
@@ -90,7 +103,7 @@ Um aplicativo web para gerenciamento de cursos, matrículas e progresso dos alun
 
 ## Rotas da API
 
-Este projeto atualmente utiliza funções assíncronas diretamente nos componentes de página (`"use client"`) para buscar e manipular dados simulados em `src/data/`. Não há rotas de API separadas implementadas. As operações de dados (CRUD para Cursos e Notas) são realizadas pelas funções exportadas em `src/data/courses.ts` e `src/data/notes.ts`.
+Este projeto atualmente utiliza funções assíncronas diretamente nos componentes de página (`"use client"`) para buscar e manipular dados do MongoDB através das funções em `src/data/`. Não há rotas de API separadas implementadas para CRUD.
 
 ## Stack Tecnológico
 
@@ -103,28 +116,26 @@ Este projeto atualmente utiliza funções assíncronas diretamente nos component
 - **Validação de Schema:** Zod
 - **Notificações (Toast):** Implementação customizada (baseada em `react-hot-toast`)
 - **Manipulação de Datas:** date-fns
-- **Persistência de Dados:** Simulação em memória (arquivos em `src/data/`)
+- **Persistência de Dados:** MongoDB (usando o driver `mongodb`)
 
 ## Diagrama UML
-
-*(Adicione aqui um diagrama UML, se aplicável. Pode ser uma imagem ou link.)*
 
 ```mermaid
 classDiagram
     class Course {
-        +id: string
+        +id: string  ~ MongoDB _id
         +title: string
         +description: string
-        +startDate?: Date | string
-        +endDate?: Date | string
+        +startDate?: Date
+        +endDate?: Date
     }
 
     class Note {
-        +id: string
+        +id: string  ~ MongoDB _id
         +title: string
         +content: string
-        +courseId: string
-        +createdAt: Date | string
+        +courseId: string ~ Refers to Course's id (string version of _id)
+        +createdAt: Date
     }
 
     Course "1" -- "0..*" Note : contains
@@ -132,46 +143,26 @@ classDiagram
 
 ## Modelo relacional e modelo de documentos
 
-**Modelo Relacional (Conceitual):**
-
-- **Tabela Cursos:**
-  - `id` (Chave Primária)
-  - `title` (Texto)
-  - `description` (Texto)
-  - `startDate` (Data, Opcional)
-  - `endDate` (Data, Opcional)
-
-- **Tabela Notas:**
-  - `id` (Chave Primária)
-  - `title` (Texto)
-  - `content` (Texto Longo)
-  - `createdAt` (Timestamp)
-  - `courseId` (Chave Estrangeira referenciando Cursos.id)
-
-**Modelo de Documentos (Exemplo NoSQL/JSON):**
+**Modelo de Documentos (MongoDB):**
 
 *Coleção `courses`:*
-
 ```json
 {
-  "_id": "string (ObjectId)", // ou id: string
+  "_id": "ObjectId",
   "title": "string",
   "description": "string",
-  "startDate": "ISODate | null", // ou string "YYYY-MM-DD"
-  "endDate": "ISODate | null" // ou string "YYYY-MM-DD"
+  "startDate": "ISODate | null",
+  "endDate": "ISODate | null"
 }
 ```
 
 *Coleção `notes`:*
-
 ```json
 {
-  "_id": "string (ObjectId)", // ou id: string
+  "_id": "ObjectId",
   "title": "string",
   "content": "string",
-  "createdAt": "ISODate", // ou string ISO 8601
-  "courseId": "string (referência ao _id do curso)"
+  "createdAt": "ISODate",
+  "courseId": "string" // String representation of the Course document's _id
 }
 ```
-
-
