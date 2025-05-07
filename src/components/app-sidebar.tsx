@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, FileText, BarChart3, Home, Settings } from 'lucide-react';
+import { BookOpen, FileText, BarChart3, Home, Settings, FileJson } from 'lucide-react'; // Added FileJson for API Docs
 
 import {
   Sidebar,
@@ -16,15 +17,29 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/auth-context'; // Import useAuth
 
 const navItems = [
   { href: '/courses', label: 'Courses', icon: BookOpen },
   { href: '/notes', label: 'My Notes', icon: FileText },
   { href: '/reports', label: 'Reports', icon: BarChart3 },
+  { href: '/swagger', label: 'API Docs', icon: FileJson }, // Added API Docs link
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { user, loading, signOutUser } = useAuth(); // Get user, loading state and signOutUser from context
+
+  const handleSignOut = async () => {
+    try {
+      await signOutUser();
+      // router.push('/auth/login'); // Redirect to login page after sign out
+    } catch (error) {
+      console.error("Failed to sign out:", error);
+      // Handle sign out error (e.g., show a toast)
+    }
+  };
+
 
   return (
     <Sidebar collapsible="icon">
@@ -46,7 +61,7 @@ export function AppSidebar() {
               <Link href={item.href} passHref legacyBehavior>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname.startsWith(item.href)}
+                  isActive={pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))}
                   tooltip={item.label}
                 >
                   <a>
@@ -59,12 +74,30 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-       <SidebarFooter className="p-2">
-         {/* Add user profile/settings later */}
-         <Button variant="ghost" className="justify-start gap-2 w-full group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:p-0">
-           <Settings />
-           <span className="group-data-[collapsible=icon]:hidden">Settings</span>
-         </Button>
+       <SidebarFooter className="p-2 flex flex-col gap-2">
+         {/* User info and Sign Out Button */}
+         {loading ? (
+            <div className="text-xs text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden p-2 text-center">Loading user...</div>
+         ) : user ? (
+           <>
+             <div className="text-xs text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden p-2 truncate">
+               Logged in as: {user.email}
+             </div>
+             <Button variant="ghost" className="justify-start gap-2 w-full group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:p-0" onClick={handleSignOut}>
+               <Settings /> {/* Replace with LogOut icon if available/preferred */}
+               <span className="group-data-[collapsible=icon]:hidden">Sign Out</span>
+             </Button>
+           </>
+         ) : (
+            <Link href="/auth/login" passHref legacyBehavior>
+                 <SidebarMenuButton asChild tooltip="Login">
+                      <a>
+                         <Settings /> {/* Replace with LogIn icon */}
+                         <span className="group-data-[collapsible=icon]:hidden">Login</span>
+                       </a>
+                 </SidebarMenuButton>
+            </Link>
+         )}
        </SidebarFooter>
     </Sidebar>
   );
