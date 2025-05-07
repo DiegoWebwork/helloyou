@@ -166,3 +166,7 @@ classDiagram
   "courseId": "string" // String representation of the Course document's _id
 }
 ```
+## Login e registro
+
+![alt text](https://github.com/DiegoWebwork/helloyou/blob/master/login.png)
+![alt text](https://github.com/DiegoWebwork/helloyou/blob/master/register.png)
