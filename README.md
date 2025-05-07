@@ -103,7 +103,7 @@ Um aplicativo web para gerenciamento de cursos, matrículas e progresso dos alun
 
 ## Rotas da API
 
-Este projeto atualmente utiliza funções assíncronas diretamente nos componentes de página (`"use client"`) para buscar e manipular dados do MongoDB através das funções em `src/data/`. Não há rotas de API separadas implementadas para CRUD.
+Este projeto atualmente utiliza funções assíncronas diretamente nos componentes de página (`"use client"`) para buscar e manipular dados do MongoDB através das funções em `src/data/`.
 
 ## Stack Tecnológico
 
